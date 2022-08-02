@@ -203,16 +203,10 @@ class SpanContext(object):
         return False
 
     def active_span(self):
-        spans = _spans()
-        if spans:
-            return spans[len(spans) - 1]
-
-        return None
+        return spans[len(spans) - 1] if (spans := _spans()) else None
 
     def get_correlation(self, key):
-        if key in self._correlation:
-            return self._correlation[key]
-        return None
+        return self._correlation[key] if key in self._correlation else None
 
     def put_correlation(self, key, value):
         if key is None:
@@ -290,9 +284,4 @@ class NoopContext(SpanContext):
 
 
 def get_context() -> SpanContext:
-    spans = _spans()
-
-    if spans:
-        return spans[len(spans) - 1].context
-
-    return SpanContext()
+    return spans[len(spans) - 1].context if (spans := _spans()) else SpanContext()

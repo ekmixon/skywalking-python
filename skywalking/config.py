@@ -41,24 +41,39 @@ logging_level = os.getenv('SW_AGENT_LOGGING_LEVEL') or 'INFO'  # type: str
 disable_plugins = (os.getenv('SW_AGENT_DISABLE_PLUGINS') or '').split(',')  # type: List[str]
 max_buffer_size = int(os.getenv('SW_AGENT_MAX_BUFFER_SIZE', '10000'))  # type: int
 sql_parameters_length = int(os.getenv('SW_SQL_PARAMETERS_LENGTH') or '0')  # type: int
-pymongo_trace_parameters = True if os.getenv('SW_PYMONGO_TRACE_PARAMETERS') and \
-                                   os.getenv('SW_PYMONGO_TRACE_PARAMETERS') == 'True' else False  # type: bool
+pymongo_trace_parameters = bool(
+    os.getenv('SW_PYMONGO_TRACE_PARAMETERS')
+    and os.getenv('SW_PYMONGO_TRACE_PARAMETERS') == 'True'
+)
+
 pymongo_parameters_max_length = int(os.getenv('SW_PYMONGO_PARAMETERS_MAX_LENGTH') or '512')  # type: int
 ignore_suffix = os.getenv('SW_IGNORE_SUFFIX') or '.jpg,.jpeg,.js,.css,.png,.bmp,.gif,.ico,.mp3,' \
                                                  '.mp4,.html,.svg '  # type: str
-flask_collect_http_params = True if os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS') and \
-                                    os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS') == 'True' else False  # type: bool
-sanic_collect_http_params = True if os.getenv('SW_SANIC_COLLECT_HTTP_PARAMS') and \
-                                    os.getenv('SW_SANIC_COLLECT_HTTP_PARAMS') == 'True' else False  # type: bool
+flask_collect_http_params = bool(
+    os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS')
+    and os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS') == 'True'
+)
+
+sanic_collect_http_params = bool(
+    os.getenv('SW_SANIC_COLLECT_HTTP_PARAMS')
+    and os.getenv('SW_SANIC_COLLECT_HTTP_PARAMS') == 'True'
+)
+
 http_params_length_threshold = int(os.getenv('SW_HTTP_PARAMS_LENGTH_THRESHOLD') or '1024')  # type: int
 http_ignore_method = os.getenv('SW_HTTP_IGNORE_METHOD', '').upper()  # type: str
-django_collect_http_params = True if os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') and \
-                                     os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') == 'True' else False  # type: bool
+django_collect_http_params = bool(
+    os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS')
+    and os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') == 'True'
+)
+
 correlation_element_max_number = int(os.getenv('SW_CORRELATION_ELEMENT_MAX_NUMBER') or '3')  # type: int
 correlation_value_max_length = int(os.getenv('SW_CORRELATION_VALUE_MAX_LENGTH') or '128')  # type: int
 trace_ignore_path = os.getenv('SW_TRACE_IGNORE_PATH') or ''  # type: str
-elasticsearch_trace_dsl = True if os.getenv('SW_ELASTICSEARCH_TRACE_DSL') and \
-                                  os.getenv('SW_ELASTICSEARCH_TRACE_DSL') == 'True' else False  # type: bool
+elasticsearch_trace_dsl = bool(
+    os.getenv('SW_ELASTICSEARCH_TRACE_DSL')
+    and os.getenv('SW_ELASTICSEARCH_TRACE_DSL') == 'True'
+)
+
 kafka_bootstrap_servers = os.getenv('SW_KAFKA_REPORTER_BOOTSTRAP_SERVERS') or "localhost:9092"  # type: str
 kafka_topic_management = os.getenv('SW_KAFKA_REPORTER_TOPIC_MANAGEMENT') or "skywalking-managements"  # type: str
 kafka_topic_segment = os.getenv('SW_KAFKA_REPORTER_TOPIC_SEGMENT') or "skywalking-segments"  # type: str
@@ -67,21 +82,33 @@ celery_parameters_length = int(os.getenv('SW_CELERY_PARAMETERS_LENGTH') or '512'
 
 # profile configs
 get_profile_task_interval = int(os.getenv('SW_PROFILE_TASK_QUERY_INTERVAL') or '20')  # type: int
-profile_active = False if os.getenv('SW_AGENT_PROFILE_ACTIVE') and \
-                         os.getenv('SW_AGENT_PROFILE_ACTIVE') == 'False' else True  # type: bool
+profile_active = (
+    not os.getenv('SW_AGENT_PROFILE_ACTIVE')
+    or os.getenv('SW_AGENT_PROFILE_ACTIVE') != 'False'
+)
+
 profile_max_parallel = int(os.getenv("SW_AGENT_PROFILE_MAX_PARALLEL") or '5')  # type: int
 profile_duration = int(os.getenv('SW_AGENT_PROFILE_DURATION') or '10')  # type: int
 profile_dump_max_stack_depth = int(os.getenv('SW_AGENT_PROFILE_DUMP_MAX_STACK_DEPTH') or '500')  # type: int
 profile_snapshot_transport_buffer_size = int(os.getenv('SW_AGENT_PROFILE_SNAPSHOT_TRANSPORT_BUFFER_SIZE') or '50')
 
-log_reporter_active = True if os.getenv('SW_AGENT_LOG_REPORTER_ACTIVE') and \
-                              os.getenv('SW_AGENT_LOG_REPORTER_ACTIVE') == 'True' else False  # type: bool
+log_reporter_active = bool(
+    os.getenv('SW_AGENT_LOG_REPORTER_ACTIVE')
+    and os.getenv('SW_AGENT_LOG_REPORTER_ACTIVE') == 'True'
+)
+
 log_reporter_max_buffer_size = int(os.getenv('SW_AGENT_LOG_REPORTER_BUFFER_SIZE') or '10000')  # type: int
 log_reporter_level = os.getenv('SW_AGENT_LOG_REPORTER_LEVEL') or 'WARNING'  # type: str
-log_reporter_ignore_filter = True if os.getenv('SW_AGENT_LOG_REPORTER_IGNORE_FILTER') and \
-                         os.getenv('SW_AGENT_LOG_REPORTER_IGNORE_FILTER') == 'True' else False  # type: bool
-log_reporter_formatted = False if os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED') and \
-                         os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED') == 'False' else True  # type: bool
+log_reporter_ignore_filter = bool(
+    os.getenv('SW_AGENT_LOG_REPORTER_IGNORE_FILTER')
+    and os.getenv('SW_AGENT_LOG_REPORTER_IGNORE_FILTER') == 'True'
+)
+
+log_reporter_formatted = (
+    not os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED')
+    or os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED') != 'False'
+)
+
 log_reporter_layout = os.getenv('SW_AGENT_LOG_REPORTER_LAYOUT') or \
                         '%(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s'  # type: str
 cause_exception_depth = int(os.getenv('SW_AGENT_CAUSE_EXCEPTION_DEPTH') or '5')  # type: int
@@ -94,7 +121,7 @@ def init(**kwargs):
 
     for key, val in kwargs.items():
         if key not in options:
-            raise KeyError('invalid config option %s' % key)
+            raise KeyError(f'invalid config option {key}')
 
         glob[key] = val
 
@@ -115,7 +142,7 @@ def finalize():
            ) + ')$'
 
     global RE_IGNORE_PATH, RE_HTTP_IGNORE_METHOD
-    RE_IGNORE_PATH = re.compile('%s|%s' % (suffix, path))
+    RE_IGNORE_PATH = re.compile(f'{suffix}|{path}')
     RE_HTTP_IGNORE_METHOD = re.compile(method, re.IGNORECASE)
 
 

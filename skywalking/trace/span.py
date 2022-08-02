@@ -73,10 +73,7 @@ class Span(ABC):
 
     def stop(self):
         self._depth -= 1
-        if self._depth:
-            return False
-
-        return self.context.stop(self)
+        return False if self._depth else self.context.stop(self)
 
     def finish(self, segment: 'Segment') -> bool:
         self.end_time = int(time.time() * 1000)
@@ -142,9 +139,7 @@ class Span(ABC):
         if isinstance(exc_val, Exception):
             self.raised()
         self.stop()
-        if exc_tb is not None:
-            return False
-        return True
+        return exc_tb is None
 
 
 @tostring

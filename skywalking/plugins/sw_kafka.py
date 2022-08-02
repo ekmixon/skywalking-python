@@ -41,8 +41,7 @@ def _sw__poll_once_func(__poll_once):
             topics = ";".join(this._subscription.subscription or
                               [t.topic for t in this._subscription._user_assignment])
 
-            with context.new_entry_span(
-                    op="Kafka/" + topics + "/Consumer/" + (this.config["group_id"] or "")) as span:
+            with context.new_entry_span(op=f"Kafka/{topics}/Consumer/" + ((this.config["group_id"] or ""))) as span:
                 for consumerRecords in res.values():
                     for record in consumerRecords:
                         carrier = Carrier()
@@ -73,8 +72,7 @@ def _sw_send_func(_send):
 
         peer = ";".join(this.config["bootstrap_servers"])
         context = get_context()
-        with context.new_exit_span(op="Kafka/" + topic + "/Producer" or "/", peer=peer,
-                                   component=Component.KafkaProducer) as span:
+        with context.new_exit_span(op=f"Kafka/{topic}/Producer" or "/", peer=peer, component=Component.KafkaProducer) as span:
             carrier = span.inject()
             span.layer = Layer.MQ
 

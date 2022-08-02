@@ -54,8 +54,7 @@ class ProfileTaskExecutionContext:
         if self._profiling_thread is not None and self._profiling_stop_event is not None:
             self._profiling_stop_event.set()
 
-    def attempt_profiling(self, trace_context: SpanContext, segment_id: str, first_span_opname: str) -> \
-            ProfileStatusReference:
+    def attempt_profiling(self, trace_context: SpanContext, segment_id: str, first_span_opname: str) -> ProfileStatusReference:
         """
         check have available slot to profile and add it
         """
@@ -66,7 +65,7 @@ class ProfileTaskExecutionContext:
             return ProfileStatusReference.create_with_none()
 
         # check first operation name matches
-        if not self.task.first_span_op_name == first_span_opname:
+        if self.task.first_span_op_name != first_span_opname:
             return ProfileStatusReference.create_with_none()
 
         # if out limit started profiling count then stop add profiling
@@ -153,7 +152,7 @@ class ProfileThread:
                         context.stop_tracing_profile(profiler.trace_context)
 
             need_sleep = (current_loop_start_time + max_sleep_period) - current_milli_time()
-            if not need_sleep > 0:
+            if need_sleep <= 0:
                 need_sleep = max_sleep_period
 
             # convert to float second

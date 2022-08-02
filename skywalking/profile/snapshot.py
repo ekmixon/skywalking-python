@@ -30,15 +30,13 @@ class TracingThreadSnapshot:
         self.stack_list = stack_list
 
     def transform(self) -> ThreadSnapshot:
-        code_sigs = [code_sign for code_sign in self.stack_list]
+        code_sigs = list(self.stack_list)
         stack = ThreadStack(codeSignatures=code_sigs)
 
-        snapshot = ThreadSnapshot(
+        return ThreadSnapshot(
             taskId=str(self.task_id),
             traceSegmentId=str(self.trace_segment_id),
             time=int(self.time),
             sequence=int(self.sequence),
-            stack=stack
+            stack=stack,
         )
-
-        return snapshot

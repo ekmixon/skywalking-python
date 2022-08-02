@@ -95,9 +95,7 @@ class CommandExecutorService:
 
     def __executor_for_command(self, command: BaseCommand):
         executor = self.__command_executor_map.get(command.command)
-        if not executor:
-            return noop_command_executor_instance
-        return executor
+        return executor or noop_command_executor_instance
 
 
 class CommandDeserializer:

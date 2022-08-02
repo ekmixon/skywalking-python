@@ -64,7 +64,13 @@ def _gen_sw_handle_request(_handle_request):
     from inspect import isawaitable
 
     def params_tostring(params):
-        return "\n".join([k + '=[' + ",".join(params.getlist(k)) + ']' for k, _ in params.items()])
+        return "\n".join(
+            [
+                f'{k}=[' + ",".join(params.getlist(k)) + ']'
+                for k, _ in params.items()
+            ]
+        )
+
 
     async def _sw_handle_request(self, request, write_callback, stream_callback):
         req = request
@@ -81,14 +87,22 @@ def _gen_sw_handle_request(_handle_request):
         with span:
             span.layer = Layer.Http
             span.component = Component.Sanic
-            span.peer = '%s:%s' % (req.remote_addr or req.ip, req.port)
+            span.peer = f'{req.remote_addr or req.ip}:{req.port}'
             span.tag(TagHttpMethod(method))
             span.tag(TagHttpURL(req.url.split("?")[0]))
             if config.sanic_collect_http_params and req.args:
-                span.tag(TagHttpParams(params_tostring(req.args)[0:config.http_params_length_threshold]))
+                span.tag(
+                    TagHttpParams(
+                        params_tostring(req.args)[
+                            : config.http_params_length_threshold
+                        ]
+                    )
+                )
+
             resp = _handle_request(self, request, write_callback, stream_callback)
             if isawaitable(resp):
                 result = await resp
 
         return result
+
     return _sw_handle_request

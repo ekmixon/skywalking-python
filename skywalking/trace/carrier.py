@@ -23,7 +23,7 @@ from skywalking.utils.lang import b64encode, b64decode
 
 class CarrierItem(object):
     def __init__(self, key: str = '', val: str = ''):
-        self.key = config.agent_namespace + "-" + key if config.agent_namespace else key   # type: str
+        self.key = f"{config.agent_namespace}-{key}" if config.agent_namespace else key
         self.val = val  # type: str
 
     @property
@@ -128,10 +128,9 @@ class SW8CorrelationCarrier(CarrierItem):
         if self.correlation is None or len(self.correlation) == 0:
             return ""
 
-        return ','.join([
-            b64encode(k) + ":" + b64encode(v)
-            for k, v in self.correlation.items()
-        ])
+        return ','.join(
+            [f"{b64encode(k)}:{b64encode(v)}" for k, v in self.correlation.items()]
+        )
 
     @val.setter
     def val(self, val: str):

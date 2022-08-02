@@ -55,14 +55,17 @@ def walk_through_dir(d) -> bool:
                 header = ' '.join([
                     line.strip(ignored_chars) for line in f.readlines() if line.startswith(comment_leading_chars)
                 ]).strip()
-                print('%s license header in file: %s' % ('✅' if license_header in header else '❌', file_path))
+                print(
+                    f"{'✅' if license_header in header else '❌'} license header in file: {file_path}"
+                )
+
                 checked &= license_header in header
     return checked
 
 
 if __name__ == "__main__":
     checked = True
-    for _, directory in enumerate(sys.argv):
+    for directory in sys.argv:
         checked &= walk_through_dir(directory)
     if not checked:
         sys.exit(1)

@@ -26,7 +26,7 @@ def install():
     _execute = Cursor.execute
 
     def _sw_execute(this: Cursor, query, args=None):
-        peer = "%s:%s" % (this.connection.host, this.connection.port)
+        peer = f"{this.connection.host}:{this.connection.port}"
 
         context = get_context()
         with context.new_exit_span(op="Mysql/PyMsql/execute", peer=peer, component=Component.PyMysql) as span:
@@ -40,8 +40,13 @@ def install():
             if config.sql_parameters_length and args:
                 parameter = ",".join([str(arg) for arg in args])
                 max_len = config.sql_parameters_length
-                parameter = parameter[0:max_len] + "..." if len(parameter) > max_len else parameter
-                span.tag(TagDbSqlParameters('[' + parameter + ']'))
+                parameter = (
+                    parameter[:max_len] + "..."
+                    if len(parameter) > max_len
+                    else parameter
+                )
+
+                span.tag(TagDbSqlParameters(f'[{parameter}]'))
 
             return res
 

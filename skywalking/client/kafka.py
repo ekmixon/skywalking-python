@@ -37,14 +37,13 @@ def __init_kafka_configs():
         key = kafka_key[25:]
         val = os.environ.get(kafka_key)
 
-        if val is not None:
-            if val.isnumeric():
-                val = int(val)
-            elif val in ["True", "False"]:
-                val = ast.literal_eval(val)
-        else:
+        if val is None:
             continue
 
+        if val.isnumeric():
+            val = int(val)
+        elif val in ["True", "False"]:
+            val = ast.literal_eval(val)
         # check if the key was already set
         if kafka_configs.get(key) is None:
             kafka_configs[key] = val

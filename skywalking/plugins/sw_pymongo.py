@@ -56,8 +56,8 @@ def inject_socket_info(SocketInfo):
             context = get_context()
 
             operation = list(spec.keys())[0]
-            sw_op = operation.capitalize() + "Operation"
-            with context.new_exit_span(op="MongoDB/" + sw_op, peer=peer, component=Component.MongoDB) as span:
+            sw_op = f"{operation.capitalize()}Operation"
+            with context.new_exit_span(op=f"MongoDB/{sw_op}", peer=peer, component=Component.MongoDB) as span:
                 result = _command(this, dbname, spec, *args, **kwargs)
 
                 span.layer = Layer.Database
@@ -68,7 +68,7 @@ def inject_socket_info(SocketInfo):
                     # get filters
                     filters = _get_filter(operation, spec)
                     max_len = config.pymongo_parameters_max_length
-                    filters = filters[0:max_len] + "..." if len(filters) > max_len else filters
+                    filters = filters[:max_len] + "..." if len(filters) > max_len else filters
                     span.tag(TagDbStatement(filters))
 
         else:
@@ -94,7 +94,7 @@ def _get_filter(request_type, spec):
         spec = dict(spec)
         spec.pop(request_type)
 
-    return request_type + " " + str(spec)
+    return f"{request_type} {str(spec)}"
 
 
 def inject_bulk_write(_Bulk, bulk_op_map):
@@ -106,7 +106,7 @@ def inject_bulk_write(_Bulk, bulk_op_map):
         context = get_context()
 
         sw_op = "MixedBulkWriteOperation"
-        with context.new_exit_span(op="MongoDB/"+sw_op, peer=peer, component=Component.MongoDB) as span:
+        with context.new_exit_span(op=f"MongoDB/{sw_op}", peer=peer, component=Component.MongoDB) as span:
             span.layer = Layer.Database
 
             bulk_result = _execute(this, *args, **kwargs)
@@ -118,11 +118,11 @@ def inject_bulk_write(_Bulk, bulk_op_map):
                 bulk_ops = this.ops
                 for bulk_op in bulk_ops:
                     opname = bulk_op_map.get(bulk_op[0])
-                    _filter = opname + " " + str(bulk_op[1])
+                    _filter = f"{opname} {str(bulk_op[1])}"
                     filters = filters + _filter + " "
 
                 max_len = config.pymongo_parameters_max_length
-                filters = filters[0:max_len] + "..." if len(filters) > max_len else filters
+                filters = filters[:max_len] + "..." if len(filters) > max_len else filters
                 span.tag(TagDbStatement(filters))
 
             return bulk_result
@@ -140,7 +140,7 @@ def inject_cursor(Cursor):
         context = get_context()
         op = "FindOperation"
 
-        with context.new_exit_span(op="MongoDB/"+op, peer=peer, component=Component.MongoDB) as span:
+        with context.new_exit_span(op=f"MongoDB/{op}", peer=peer, component=Component.MongoDB) as span:
             span.layer = Layer.Database
 
             # __send_message return nothing
@@ -150,9 +150,9 @@ def inject_cursor(Cursor):
             span.tag(TagDbInstance(this.collection.database.name))
 
             if config.pymongo_trace_parameters:
-                filters = "find " + str(operation.spec)
+                filters = f"find {str(operation.spec)}"
                 max_len = config.pymongo_parameters_max_length
-                filters = filters[0:max_len] + "..." if len(filters) > max_len else filters
+                filters = filters[:max_len] + "..." if len(filters) > max_len else filters
                 span.tag(TagDbStatement(filters))
 
             return

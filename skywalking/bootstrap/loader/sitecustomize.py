@@ -54,11 +54,17 @@ _sw_loader_logger = _get_sw_loader_logger()
 
 # DEBUG messages in case execution goes wrong
 _sw_loader_logger.debug('---------------sitecustomize.py---------------')
-_sw_loader_logger.debug("Successfully imported sitecustomize.py from `{}`".format(__file__))
-_sw_loader_logger.debug('You are inside working dir - {}'.format(os.getcwd()))
-_sw_loader_logger.debug('Using Python version - {} '.format(sys.version))
-_sw_loader_logger.debug('Using executable at - {}'.format(sys.executable))
-_sw_loader_logger.debug('System Base Python executable location {}'.format(sys.base_prefix))
+_sw_loader_logger.debug(
+    f"Successfully imported sitecustomize.py from `{__file__}`"
+)
+
+_sw_loader_logger.debug(f'You are inside working dir - {os.getcwd()}')
+_sw_loader_logger.debug(f'Using Python version - {sys.version} ')
+_sw_loader_logger.debug(f'Using executable at - {sys.executable}')
+_sw_loader_logger.debug(
+    f'System Base Python executable location {sys.base_prefix}'
+)
+
 
 if sys.prefix != sys.base_prefix:
     _sw_loader_logger.debug("[The SkyWalking agent bootstrapper is running inside a virtual environment]")
@@ -76,7 +82,7 @@ loaded = sys.modules.pop('sitecustomize', None)  # pop sitecustomize from loaded
 # now try to find the original sitecustomize provided in user env
 try:
     loaded = importlib.import_module('sitecustomie')
-    _sw_loader_logger.debug("Found user sitecustomize file {}, imported".format(loaded))
+    _sw_loader_logger.debug(f"Found user sitecustomize file {loaded}, imported")
 except ImportError:  # ModuleNotFoundError
     _sw_loader_logger.debug("Original sitecustomize module not found, skipping.")
 finally:  # surprise the import error by adding loaded back
@@ -88,14 +94,15 @@ finally:  # surprise the import error by adding loaded back
 # This behavior can be turned off using a user provided env below
 # os.environ['SW_PYTHON_BOOTSTRAP_PROPAGATE']
 
-if os.environ.get('SW_PYTHON_BOOTSTRAP_PROPAGATE') == 'False':
-    if os.environ.get('PYTHONPATH'):
-        partitioned = os.environ['PYTHONPATH'].split(os.path.pathsep)
-        loader_path = os.path.dirname(__file__)
-        if loader_path in partitioned:  # check if we are already removed by a third-party
-            partitioned.remove(loader_path)
-            os.environ["PYTHONPATH"] = os.path.pathsep.join(partitioned)
-            _sw_loader_logger.debug("Removed loader from PYTHONPATH, spawned process will not have agent enabled")
+if os.environ.get(
+    'SW_PYTHON_BOOTSTRAP_PROPAGATE'
+) == 'False' and os.environ.get('PYTHONPATH'):
+    partitioned = os.environ['PYTHONPATH'].split(os.path.pathsep)
+    loader_path = os.path.dirname(__file__)
+    if loader_path in partitioned:  # check if we are already removed by a third-party
+        partitioned.remove(loader_path)
+        os.environ["PYTHONPATH"] = os.path.pathsep.join(partitioned)
+        _sw_loader_logger.debug("Removed loader from PYTHONPATH, spawned process will not have agent enabled")
 
 
 # Note that users could be misusing the CLI to call a Python program that
@@ -112,12 +119,9 @@ prefix_match = cli_python_prefix == os.path.realpath(os.path.normpath(sys.prefix
 if not (version_match and prefix_match):
 
     _sw_loader_logger.error(
-        "\nPython used by sw-python CLI - v{} at {}\n"
-        "Python used by your actual program - v{} at {}".format(
-            cli_python_version, cli_python_prefix, platform.python_version(),
-            os.path.realpath(os.path.normpath(sys.prefix))
-        )
+        f"\nPython used by sw-python CLI - v{cli_python_version} at {cli_python_prefix}\nPython used by your actual program - v{platform.python_version()} at {os.path.realpath(os.path.normpath(sys.prefix))}"
     )
+
     _sw_loader_logger.error("The sw-python CLI was instructed to run a program "
                             "using an different Python installation "
                             "this is not safe and loader will not proceed. "

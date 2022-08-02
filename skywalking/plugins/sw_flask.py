@@ -29,7 +29,13 @@ def install():
     _handle_exception = Flask.handle_exception
 
     def params_tostring(params):
-        return "\n".join([k + '=[' + ",".join(params.getlist(k)) + ']' for k, _ in params.items()])
+        return "\n".join(
+            [
+                f'{k}=[' + ",".join(params.getlist(k)) + ']'
+                for k, _ in params.items()
+            ]
+        )
+
 
     def _sw_full_dispatch_request(this: Flask):
         import flask
@@ -48,11 +54,18 @@ def install():
         with span:
             span.layer = Layer.Http
             span.component = Component.Flask
-            span.peer = '%s:%s' % (req.environ["REMOTE_ADDR"], req.environ["REMOTE_PORT"])
+            span.peer = f'{req.environ["REMOTE_ADDR"]}:{req.environ["REMOTE_PORT"]}'
             span.tag(TagHttpMethod(method))
             span.tag(TagHttpURL(req.url.split("?")[0]))
             if config.flask_collect_http_params and req.values:
-                span.tag(TagHttpParams(params_tostring(req.values)[0:config.http_params_length_threshold]))
+                span.tag(
+                    TagHttpParams(
+                        params_tostring(req.values)[
+                            : config.http_params_length_threshold
+                        ]
+                    )
+                )
+
             resp = _full_dispatch_request(this)
 
             if resp.status_code >= 400:

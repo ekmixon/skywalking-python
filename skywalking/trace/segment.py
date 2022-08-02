@@ -44,13 +44,13 @@ class SegmentRef(object):
         if not isinstance(other, SegmentRef):
             raise NotImplementedError
         return self.ref_type == other.ref_type and \
-            self.trace_id == other.trace_id and \
-            self.segment_id == other.segment_id and \
-            self.span_id == other.span_id and \
-            self.service == other.service and \
-            self.service_instance == other.service_instance and \
-            self.endpoint == other.endpoint and \
-            self.client_address == other.client_address
+                self.trace_id == other.trace_id and \
+                self.segment_id == other.segment_id and \
+                self.span_id == other.span_id and \
+                self.service == other.service and \
+                self.service_instance == other.service_instance and \
+                self.endpoint == other.endpoint and \
+                self.client_address == other.client_address
 
     @classmethod
     def build_ref(cls, snapshot: 'Snapshot'):

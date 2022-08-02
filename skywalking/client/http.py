@@ -123,7 +123,9 @@ class HttpLogDataReportService(LogDataReportService):
         self.session = requests.Session()
 
     def report(self, generator):
-        log_batch = [json.loads(json_format.MessageToJson(log_data)) for log_data in generator]
-        if log_batch:  # prevent empty batches
+        if log_batch := [
+            json.loads(json_format.MessageToJson(log_data))
+            for log_data in generator
+        ]:
             res = self.session.post(self.url_report, json=log_batch)
             logger.debug('report batch log response: %s', res)

@@ -182,7 +182,10 @@ def __fini():
 
 def __fork_before():
     if config.protocol != 'http':
-        logger.warning('fork() not currently supported with %s protocol' % config.protocol)
+        logger.warning(
+            f'fork() not currently supported with {config.protocol} protocol'
+        )
+
 
     # TODO: handle __queue and __finished correctly (locks, mutexes, etc...), need to lock before fork and unlock after
     # if possible, or ensure they are not locked in threads (end threads and restart after fork?)
@@ -266,4 +269,4 @@ def notify_profile_finish(task: ProfileTask):
     try:
         __protocol.notify_profile_task_finish(task)
     except Exception as e:
-        logger.error("notify profile task finish to backend fail. " + str(e))
+        logger.error(f"notify profile task finish to backend fail. {str(e)}")

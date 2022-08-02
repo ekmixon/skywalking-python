@@ -24,6 +24,8 @@ def install():
     import wrapt  # psycopg2 is read-only C extension objects so they need to be proxied
     import psycopg2
 
+
+
     class ProxyCursor(wrapt.ObjectProxy):
         def __init__(self, cur):
             wrapt.ObjectProxy.__init__(self, cur)
@@ -38,7 +40,7 @@ def install():
             peer = dsn['host'] + ':' + dsn['port']
 
             with get_context().new_exit_span(op="PostgreSLQ/Psycopg/execute", peer=peer,
-                                             component=Component.Psycopg) as span:
+                                                         component=Component.Psycopg) as span:
                 span.layer = Layer.Database
 
                 span.tag(TagDbType("PostgreSQL"))
@@ -49,9 +51,9 @@ def install():
                     text = ','.join(str(v) for v in vars)
 
                     if len(text) > config.sql_parameters_length:
-                        text = text[:config.sql_parameters_length] + '...'
+                        text = f'{text[:config.sql_parameters_length]}...'
 
-                    span.tag(TagDbSqlParameters('[' + text + ']'))
+                    span.tag(TagDbSqlParameters(f'[{text}]'))
 
                 return self._self_cur.execute(query, vars)
 
@@ -60,7 +62,7 @@ def install():
             peer = dsn['host'] + ':' + dsn['port']
 
             with get_context().new_exit_span(op="PostgreSLQ/Psycopg/executemany", peer=peer,
-                                             component=Component.Psycopg) as span:
+                                                         component=Component.Psycopg) as span:
                 span.layer = Layer.Database
 
                 span.tag(TagDbType("PostgreSQL"))
@@ -77,7 +79,7 @@ def install():
                         total_len += len(text)
 
                         if total_len > max_len:
-                            text_list.append(text[:max_len - total_len] + '...')
+                            text_list.append(f'{text[:max_len - total_len]}...')
 
                             break
 
@@ -92,15 +94,16 @@ def install():
             peer = dsn['host'] + ':' + dsn['port']
 
             with get_context().new_exit_span(op="PostgreSLQ/Psycopg/callproc", peer=peer,
-                                             component=Component.Psycopg) as span:
+                                                         component=Component.Psycopg) as span:
                 span.layer = Layer.Database
-                args = '(' + ('' if not parameters else ','.join(parameters)) + ')'
+                args = '(' + (','.join(parameters) if parameters else '') + ')'
 
                 span.tag(TagDbType("PostgreSQL"))
                 span.tag(TagDbInstance(dsn['dbname']))
                 span.tag(TagDbStatement(procname + args))
 
                 return self._self_cur.callproc(procname, parameters)
+
 
     class ProxyConnection(wrapt.ObjectProxy):
         def __init__(self, conn):

@@ -58,7 +58,12 @@ def install():
                 return l_tags
 
             for i, arg in enumerate(record.args):
-                l_tags.data.append(KeyStringValuePair(key='argument.' + str(i), value=str(arg)))
+                l_tags.data.append(
+                    KeyStringValuePair(
+                        key=f'argument.{str(i)}', value=str(arg)
+                    )
+                )
+
 
             if record.exc_info:
                 l_tags.data.append(KeyStringValuePair(key='exception',

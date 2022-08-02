@@ -27,8 +27,7 @@ def install():
     def _sw_perform_request(this: Transport, method, url, headers=None, params=None, body=None):
         context = get_context()
         peer = ",".join([host["host"] + ":" + str(host["port"]) for host in this.hosts])
-        with context.new_exit_span(op="Elasticsearch/" + method + url, peer=peer,
-                                   component=Component.Elasticsearch) as span:
+        with context.new_exit_span(op=f"Elasticsearch/{method}{url}", peer=peer, component=Component.Elasticsearch) as span:
             span.layer = Layer.Database
             res = _perform_request(this, method, url, headers=headers, params=params, body=body)
 

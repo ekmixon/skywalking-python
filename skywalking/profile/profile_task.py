@@ -30,13 +30,13 @@ class ProfileTask:
                  max_sampling_count: int = -1,
                  start_time: int = -1,
                  create_time: int = -1):
-        self.task_id = str(task_id)  # type: str
-        self.first_span_op_name = str(first_span_op_name)  # type: str
-        self.duration = int(duration)  # type: int
+        self.task_id = task_id
+        self.first_span_op_name = first_span_op_name
+        self.duration = duration
         # when can start profile after span context created
-        self.min_duration_threshold = int(min_duration_threshold)  # type: int
+        self.min_duration_threshold = min_duration_threshold
         # profile interval
-        self.thread_dump_period = int(thread_dump_period)  # type: int
-        self.max_sampling_count = int(max_sampling_count)  # type: int
-        self.start_time = int(start_time)  # type: int
-        self.create_time = int(create_time)  # type: int
+        self.thread_dump_period = thread_dump_period
+        self.max_sampling_count = max_sampling_count
+        self.start_time = start_time
+        self.create_time = create_time

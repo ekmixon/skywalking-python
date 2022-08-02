@@ -25,7 +25,10 @@ class TestAtomicCounter(unittest.TestCase):
     def test_counter(self):
         counter = AtomicCounter()
 
-        threads = [threading.Thread(target=lambda: counter.next()) for _ in range(0, 2000)]
+        threads = [
+            threading.Thread(target=lambda: counter.next()) for _ in range(2000)
+        ]
+
 
         [t.start() for t in threads]
 

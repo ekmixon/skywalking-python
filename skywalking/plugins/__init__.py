@@ -114,12 +114,13 @@ def pkg_version_check(plugin):
 
 def check(rule_unit, current_version):
     idx = 2 if rule_unit[1] == '=' else 1
-    symbol = rule_unit[0:idx]
+    symbol = rule_unit[:idx]
     expect_pkg_version = rule_unit[idx:]
 
     expect_version = version.parse(expect_pkg_version)
-    f = _operators.get(symbol) or None
-    if not f:
-        raise VersionRuleException("version rule {} error. only allow >,>=,==,<=,<,!= symbols".format(rule_unit))
-
-    return f(current_version, expect_version)
+    if f := _operators.get(symbol) or None:
+        return f(current_version, expect_version)
+    else:
+        raise VersionRuleException(
+            f"version rule {rule_unit} error. only allow >,>=,==,<=,<,!= symbols"
+        )

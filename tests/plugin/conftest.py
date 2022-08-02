@@ -55,7 +55,7 @@ def docker_compose(request, prepare, version):
     compose.start()
 
     exception = None
-    for _ in range(0, 10):
+    for _ in range(10):
         try:
             prepare()
             exception = None

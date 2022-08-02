@@ -46,7 +46,7 @@ def install():
             # Any HTTP headers in the request are converted to META keys by converting all characters to uppercase,
             # replacing any hyphens with underscores and adding an HTTP_ prefix to the name.
             # https://docs.djangoproject.com/en/3.0/ref/request-response/#django.http.HttpRequest.META
-            sw_http_header_key = 'HTTP_%s' % item.key.upper().replace('-', '_')
+            sw_http_header_key = f"HTTP_{item.key.upper().replace('-', '_')}"
             if sw_http_header_key in request.META:
                 item.val = request.META[sw_http_header_key]
 
@@ -56,14 +56,22 @@ def install():
         with span:
             span.layer = Layer.Http
             span.component = Component.Django
-            span.peer = '%s:%s' % (request.META.get('REMOTE_ADDR'), request.META.get('REMOTE_PORT') or "80")
+            span.peer = f"""{request.META.get('REMOTE_ADDR')}:{request.META.get('REMOTE_PORT') or "80"}"""
+
 
             span.tag(TagHttpMethod(method))
             span.tag(TagHttpURL(request.build_absolute_uri().split("?")[0]))
 
             # you can get request parameters by `request.GET` even though client are using POST or other methods
             if config.django_collect_http_params and request.GET:
-                span.tag(TagHttpParams(params_tostring(request.GET)[0:config.http_params_length_threshold]))
+                span.tag(
+                    TagHttpParams(
+                        params_tostring(request.GET)[
+                            : config.http_params_length_threshold
+                        ]
+                    )
+                )
+
 
             resp = _get_response(this, request)
             span.tag(TagHttpStatusCode(resp.status_code))
@@ -84,4 +92,9 @@ def install():
 
 
 def params_tostring(params):
-    return "\n".join([k + '=[' + ",".join(params.getlist(k)) + ']' for k, _ in params.items()])
+    return "\n".join(
+        [
+            f'{k}=[' + ",".join(params.getlist(k)) + ']'
+            for k, _ in params.items()
+        ]
+    )
